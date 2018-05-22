@@ -20,6 +20,9 @@
         <activity
             android:name=".screens.SimpleTextExampleScreen"
             android:label="@string/btSimpleTextExample"/>
+        <activity
+            android:name=".screens.ItemDetailsScreen"
+            android:label="@string/titleItemDetails"/>
     </application>
 
 </manifest>

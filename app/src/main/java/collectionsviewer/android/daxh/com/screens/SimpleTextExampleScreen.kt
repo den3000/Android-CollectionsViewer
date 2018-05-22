@@ -7,7 +7,6 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import collectionsviewer.android.daxh.com.R
@@ -72,8 +71,7 @@ class SimpleTextExampleScreen : BaseScreen() {
                 }.viewHolderBind { collectionsViewer, holder, position ->
                     holder?.item = collectionsViewer.data?.get(position)
                 }.viewHolderClicked { collectionsViewer, holder, position ->
-                    val text = collectionsViewer.data?.get(position)?.text
-                    Log.e("bla", "Clicked $text")
+                    startActivity(ItemDetailsScreen.create(this, holder?.item?.text))
                 }.columnsNum {
                         return@columnsNum if (resources.configuration.orientation
                                 == Configuration.ORIENTATION_PORTRAIT) { 1 } else { 2 }

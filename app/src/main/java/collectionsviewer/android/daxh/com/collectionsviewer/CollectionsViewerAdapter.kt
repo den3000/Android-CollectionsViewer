@@ -1,4 +1,4 @@
-package iterro.insurevault.custom.collectionsviewer
+package collectionsviewer.android.daxh.com.collectionsviewer
 
 import android.os.Parcelable
 import android.support.v7.widget.RecyclerView

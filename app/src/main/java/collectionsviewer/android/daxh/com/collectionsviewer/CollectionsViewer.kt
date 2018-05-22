@@ -1,4 +1,4 @@
-package iterro.insurevault.custom.collectionsviewer
+package collectionsviewer.android.daxh.com.collectionsviewer
 
 import android.os.Bundle
 import android.os.Handler
@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,7 +62,7 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
     var refreshLayoutCallback: ((collectionsViewer: CollectionsViewer<I, H>) -> Unit)? = null
         private set
 
-    private var gridLayoutManager: GridLayoutManager? = null
+    private var layoutManager: RecyclerView.LayoutManager? = null
 
     private var handler: Handler? = null
 
@@ -90,8 +91,8 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
 
         handler = Handler()
 
-        gridLayoutManager = GridLayoutManager(context, columnsNumCallback.invoke())
-        recyclerView?.layoutManager = gridLayoutManager
+        layoutManager = StaggeredGridLayoutManager(columnsNumCallback(),1)
+        recyclerView.layoutManager = layoutManager
         recyclerView.adapter = CollectionsViewerAdapter(this)
 
         refreshLayout.setOnRefreshListener(this)
@@ -116,9 +117,9 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
 
     fun columnsNum(callback: (() -> Int)): CollectionsViewer<I, H> {
         this.columnsNumCallback = callback
-        if (gridLayoutManager != null) {
-            gridLayoutManager = GridLayoutManager(context, columnsNumCallback.invoke())
-            recyclerView?.layoutManager = gridLayoutManager
+        if (layoutManager != null) {
+            layoutManager = GridLayoutManager(context, columnsNumCallback.invoke())
+            recyclerView?.layoutManager = layoutManager
         }
         return this
     }

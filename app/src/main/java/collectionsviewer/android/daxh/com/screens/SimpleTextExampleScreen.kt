@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import collectionsviewer.android.daxh.com.R
-import iterro.insurevault.custom.collectionsviewer.CollectionsViewer
+import collectionsviewer.android.daxh.com.collectionsviewer.CollectionsViewer
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.view_holder_simpletext.*

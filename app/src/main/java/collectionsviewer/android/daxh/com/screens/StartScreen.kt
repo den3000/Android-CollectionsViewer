@@ -12,6 +12,6 @@ class StartScreen : BaseScreen() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
-        btSimpleTextExample?.setOnClickListener { startActivity(SimpleTextExampleScreen.create(this)) }
+        btSimpleTextExample.setOnClickListener { startActivity(SimpleTextExampleScreen.create(this)) }
     }
 }

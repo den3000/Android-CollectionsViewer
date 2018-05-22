@@ -4,15 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import collectionsviewer.android.daxh.com.R
 import collectionsviewer.android.daxh.com.collectionsviewer.CollectionsViewer
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.synthetic.main.collectionsviewer.*
 import kotlinx.android.synthetic.main.view_holder_simpletext.*
 
 class SimpleTextExampleScreen : BaseScreen() {
@@ -53,7 +55,7 @@ class SimpleTextExampleScreen : BaseScreen() {
 
         collectionsViewer = CollectionsViewer.create<SimpleTextItem, SimpleTextViewHolder>(items, this)
                 .configureCollectionsViewer {
-//                    it.recyclerView.background =
+                    it.recyclerView.setBackgroundColor(Color.CYAN)
                 }
                 .viewHolderCreate { collectionsViewer, parent, _ ->
                     val itemView = LayoutInflater.from(parent?.context)
@@ -69,6 +71,9 @@ class SimpleTextExampleScreen : BaseScreen() {
                     return@viewHolderCreate vh
                 }.viewHolderBind { collectionsViewer, holder, position ->
                     holder?.item = collectionsViewer.data?.get(position)
+                }.viewHolderClicked { collectionsViewer, holder, position ->
+                    val text = collectionsViewer.data?.get(position)?.text
+                    Log.e("bla", "Clicked $text")
                 }.columnsNum {
                         return@columnsNum if (resources.configuration.orientation
                                 == Configuration.ORIENTATION_PORTRAIT) { 1 } else { 2 }
@@ -83,8 +88,7 @@ class SimpleTextExampleScreen : BaseScreen() {
 data class SimpleTextItem(
         val text: String = "") : Parcelable
 
-class SimpleTextViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView), LayoutContainer {
-
+class SimpleTextViewHolder(override val containerView: View?): CollectionsViewer.ClickableViewHolder(containerView), LayoutContainer {
     var item: SimpleTextItem? = null
         set(value) {
             field = value

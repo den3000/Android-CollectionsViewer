@@ -24,7 +24,7 @@
         android:text="Details"
         android:textColor="@android:color/white"
         android:background="@android:color/darker_gray"
-        android:textSize="15sp"
+        android:textSize="17sp"
         android:textStyle="bold"/>
 
 </LinearLayout>

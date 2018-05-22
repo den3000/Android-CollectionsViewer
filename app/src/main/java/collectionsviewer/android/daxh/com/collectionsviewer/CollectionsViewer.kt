@@ -56,6 +56,8 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
         private set
     var bindViewHolderCallback: ((collectionsViewer: CollectionsViewer<I, H>, holder: H?, position: Int) -> Unit)? = null
         private set
+    var clickViewHolderCallback: ((collectionsViewer: CollectionsViewer<I, H>, holder: H?, position: Int) -> Unit)? = null
+        private set
 
     var configureCollectionsViewerCallback: ((collectionsViewer: CollectionsViewer<I, H>) -> Unit)? = null
         private set
@@ -134,6 +136,11 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
         return this
     }
 
+    fun viewHolderClicked(callback: (collectionsViewer: CollectionsViewer<I, H>, holder: H?, position: Int) -> Unit): CollectionsViewer<I, H> {
+        this.clickViewHolderCallback = callback
+        return this
+    }
+
     fun configureCollectionsViewer(callback: (collectionsViewer: CollectionsViewer<I, H>) -> Unit) : CollectionsViewer<I, H> {
         this.configureCollectionsViewerCallback = callback
         return this
@@ -155,6 +162,18 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
 
     override fun onRefresh() {
         refreshLayoutCallback?.invoke(this)
+    }
+
+    open class ClickableViewHolder(containerView: View?) : RecyclerView.ViewHolder(containerView), View.OnClickListener {
+        var clickCallback: (() -> Unit)? = null
+
+        init {
+            containerView?.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            clickCallback?.invoke()
+        }
     }
 }
 

@@ -13,6 +13,12 @@ class CollectionsViewerAdapter<I : Parcelable, H : RecyclerView.ViewHolder>(val 
 
     override fun onBindViewHolder(holder: H, position: Int) {
         collectionsViewer.bindViewHolderCallback?.invoke(collectionsViewer, holder, position)
+        if (collectionsViewer.clickViewHolderCallback != null && holder is CollectionsViewer.ClickableViewHolder) {
+            // TODO Better to test it with LeakCanary, to be sure that this is fine
+            holder.clickCallback = {
+                collectionsViewer.clickViewHolderCallback?.invoke(collectionsViewer, holder, position)
+            }
+        }
     }
 
     override fun getItemCount(): Int {

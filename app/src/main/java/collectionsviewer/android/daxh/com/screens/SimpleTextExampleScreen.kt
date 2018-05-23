@@ -26,7 +26,6 @@ class SimpleTextExampleScreen : BaseScreen() {
         }
     }
 
-    private var page = 0
     private val len = 7
     private val allData = arrayListOf(
             SimpleTextItem("01 text"),
@@ -113,7 +112,6 @@ class SimpleTextExampleScreen : BaseScreen() {
                             collectionsViewer.stopPullToRefresh()
                         }
                     }
-
                 }.columnsNum {
                         return@columnsNum if (resources.configuration.orientation
                                 == Configuration.ORIENTATION_PORTRAIT) { 1 } else { 2 }

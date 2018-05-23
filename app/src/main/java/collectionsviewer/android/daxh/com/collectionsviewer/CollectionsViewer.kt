@@ -20,6 +20,7 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
     companion object {
         const val TAG = "CollectionsViewerFragmentTag"
         private const val EXTRA_DATA = "extra_data"
+        private const val EXTRA_ISPULLTOREFRESH = "extra_ispulltorefresh"
 
         fun <I : Parcelable, H : RecyclerView.ViewHolder> create(forData: ArrayList<I>, inActivity: AppCompatActivity, withTag: String = TAG, forceData: Boolean = false): CollectionsViewer<I, H> {
             val fragmentManager = inActivity.supportFragmentManager
@@ -79,10 +80,16 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
         return this
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(EXTRA_ISPULLTOREFRESH, refreshLayout?.isRefreshing ?: false)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         data = arguments?.getParcelableArrayList(EXTRA_DATA)
         return inflater.inflate(R.layout.collectionsviewer, container, false)
@@ -99,6 +106,9 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
 
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.isEnabled = refreshLayoutCallback != null
+        savedInstanceState?.run {
+            refreshLayout?.isRefreshing = getBoolean(EXTRA_ISPULLTOREFRESH)
+        }
 
         configureCollectionsViewerCallback?.invoke(this)
     }

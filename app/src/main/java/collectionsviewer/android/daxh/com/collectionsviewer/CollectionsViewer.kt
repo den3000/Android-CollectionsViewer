@@ -1,4 +1,4 @@
-package iterro.insurevault.custom.collectionsviewer
+package collectionsviewer.android.daxh.com.collectionsviewer
 
 import android.os.Bundle
 import android.os.Handler
@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
     companion object {
         const val TAG = "CollectionsViewerFragmentTag"
         private const val EXTRA_DATA = "extra_data"
+        private const val EXTRA_ISPULLTOREFRESH = "extra_ispulltorefresh"
 
         fun <I : Parcelable, H : RecyclerView.ViewHolder> create(forData: ArrayList<I>, inActivity: AppCompatActivity, withTag: String = TAG, forceData: Boolean = false): CollectionsViewer<I, H> {
             val fragmentManager = inActivity.supportFragmentManager
@@ -55,13 +57,15 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
         private set
     var bindViewHolderCallback: ((collectionsViewer: CollectionsViewer<I, H>, holder: H?, position: Int) -> Unit)? = null
         private set
+    var clickViewHolderCallback: ((collectionsViewer: CollectionsViewer<I, H>, holder: H?, position: Int) -> Unit)? = null
+        private set
 
     var configureCollectionsViewerCallback: ((collectionsViewer: CollectionsViewer<I, H>) -> Unit)? = null
         private set
     var refreshLayoutCallback: ((collectionsViewer: CollectionsViewer<I, H>) -> Unit)? = null
         private set
 
-    private var gridLayoutManager: GridLayoutManager? = null
+    private var layoutManager: RecyclerView.LayoutManager? = null
 
     private var handler: Handler? = null
 
@@ -76,10 +80,16 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
         return this
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(EXTRA_ISPULLTOREFRESH, refreshLayout?.isRefreshing ?: false)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         data = arguments?.getParcelableArrayList(EXTRA_DATA)
         return inflater.inflate(R.layout.collectionsviewer, container, false)
@@ -90,12 +100,15 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
 
         handler = Handler()
 
-        gridLayoutManager = GridLayoutManager(context, columnsNumCallback.invoke())
-        recyclerView?.layoutManager = gridLayoutManager
+        layoutManager = StaggeredGridLayoutManager(columnsNumCallback(),1)
+        recyclerView.layoutManager = layoutManager
         recyclerView.adapter = CollectionsViewerAdapter(this)
 
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.isEnabled = refreshLayoutCallback != null
+        savedInstanceState?.run {
+            refreshLayout?.isRefreshing = getBoolean(EXTRA_ISPULLTOREFRESH)
+        }
 
         configureCollectionsViewerCallback?.invoke(this)
     }
@@ -116,9 +129,9 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
 
     fun columnsNum(callback: (() -> Int)): CollectionsViewer<I, H> {
         this.columnsNumCallback = callback
-        if (gridLayoutManager != null) {
-            gridLayoutManager = GridLayoutManager(context, columnsNumCallback.invoke())
-            recyclerView?.layoutManager = gridLayoutManager
+        if (layoutManager != null) {
+            layoutManager = GridLayoutManager(context, columnsNumCallback.invoke())
+            recyclerView?.layoutManager = layoutManager
         }
         return this
     }
@@ -130,6 +143,11 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
 
     fun viewHolderBind(callback: (collectionsViewer: CollectionsViewer<I, H>, holder: H?, position: Int) -> Unit): CollectionsViewer<I, H> {
         this.bindViewHolderCallback = callback
+        return this
+    }
+
+    fun viewHolderClicked(callback: (collectionsViewer: CollectionsViewer<I, H>, holder: H?, position: Int) -> Unit): CollectionsViewer<I, H> {
+        this.clickViewHolderCallback = callback
         return this
     }
 
@@ -154,6 +172,18 @@ class CollectionsViewer<I : Parcelable, H : RecyclerView.ViewHolder> : Fragment(
 
     override fun onRefresh() {
         refreshLayoutCallback?.invoke(this)
+    }
+
+    open class ClickableViewHolder(containerView: View?) : RecyclerView.ViewHolder(containerView), View.OnClickListener {
+        var clickCallback: (() -> Unit)? = null
+
+        init {
+            containerView?.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            clickCallback?.invoke()
+        }
     }
 }
 

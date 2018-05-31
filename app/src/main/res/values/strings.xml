@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CollectionsViewer</string>
+    <string name="btSimpleTextExample">Simple Text Example</string>
+    <string name="titleItemDetails">Item Details</string>
 </resources>
